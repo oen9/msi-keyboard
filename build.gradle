@@ -1,0 +1,33 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.4.RELEASE")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'spring-boot'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'log4j:log4j:1.2.17'
+    compile 'log4j:apache-log4j-extras:1.2.17'
+
+    compile 'org.usb4java:usb4java:1.2.0'
+
+    testCompile 'junit:junit:4.12'
+}
+
+//gradled run -Dexec.args="1 4"
+run {
+    systemProperties System.getProperties()
+    systemProperty "myvariable", System.getProperty("myvariable")
+    if (null != System.getProperty("exec.args")) {
+        args System.getProperty("exec.args").split()
+    }
+}
