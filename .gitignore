@@ -12,5 +12,6 @@ hs_err_pid*
 *.swp
 gradle/
 gradlew*
+.gradle/
 build/
 .idea/
