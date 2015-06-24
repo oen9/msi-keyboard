@@ -1,24 +1,42 @@
 package pl.oen.msi.keyboard;
 
 import org.apache.log4j.Logger;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import pl.oen.msi.keyboard.exception.DeviceNotFoundException;
 
-public final class Main {
+import java.io.ByteArrayOutputStream;
+
+public final class Main  {
     private static final Logger LOGGER = Logger.getLogger(Main.class);
 
-    private Main() {
+    public static void main(String... args) {
+        Args args2 = new Args();
+        CmdLineParser parser = new CmdLineParser(args2);
+        try {
+            parser.parseArgument(args);
+            if (args2.isX()) {
+                startConsoleApp(args2);
+            } else {
+                MainWindow.launch(MainWindow.class, args);
+            }
+        } catch (CmdLineException e) {
+            String error = e.getMessage() + System.lineSeparator();
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            parser.printUsage(baos);
+            LOGGER.error(error + baos.toString());
+        }
     }
 
-    public static void main(String... args) {
-        byte colour = 1;
-        if (1 > args.length) {
-            LOGGER.info("arg1: colour");
-        } else {
-            colour = Byte.parseByte(args[0]);
-        }
-
+    protected static void startConsoleApp(final Args args) {
         KeyboardUsbConnector keyboardUsbConnector = new KeyboardUsbConnector();
-        keyboardUsbConnector.setColour((byte)1, colour);
-        keyboardUsbConnector.setColour((byte)2, colour);
-        keyboardUsbConnector.setColour((byte)3, colour);
+
+        try {
+            keyboardUsbConnector.setColours(args.getColour1(), args.getColour2(), args.getColour3());
+        } catch (DeviceNotFoundException e) {
+            LOGGER.error("Device not found");
+            LOGGER.debug("Device not found", e);
+        }
     }
 }
