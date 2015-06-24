@@ -2,6 +2,7 @@ package pl.oen.msi.keyboard;
 
 import org.apache.log4j.Logger;
 import org.usb4java.*;
+import pl.oen.msi.keyboard.exception.DeviceNotFoundException;
 
 import java.nio.ByteBuffer;
 
@@ -12,6 +13,12 @@ public class KeyboardUsbConnector {
     protected short interfaceNumber = 0;
     protected int report_number = 1;
     protected byte modeNormal = 1;
+
+    public void setColours(final Byte colour1, final Byte colour2, final Byte colour3) {
+        setColour((byte) 1, colour1);
+        setColour((byte) 2, null != colour2 ? colour2 : colour1);
+        setColour((byte) 3, null != colour3 ? colour3 : colour1);
+    }
 
     public void setColour(final byte region, final byte colour) {
         Context context = initLibUsb();
@@ -66,6 +73,10 @@ public class KeyboardUsbConnector {
 
     protected DeviceHandle createDevicehandle(final short vendorId, final short productId) {
         Device device = findDevice(vendorId, productId);
+
+        if (null == device) {
+            throw new DeviceNotFoundException(vendorId, productId);
+        }
 
         DeviceHandle handle = new DeviceHandle();
         int result = LibUsb.open(device, handle);
