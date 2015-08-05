@@ -18,7 +18,8 @@ public final class Main  {
             if (args2.isX()) {
                 startConsoleApp(args2);
             } else {
-                MainWindow.launch(MainWindow.class, args);
+//                MainWindow.launch(MainWindow.class, args);
+                TestApplication.launch(TestApplication.class, args);
             }
         } catch (CmdLineException e) {
             String error = e.getMessage() + System.lineSeparator();

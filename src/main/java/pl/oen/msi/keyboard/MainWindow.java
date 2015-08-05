@@ -28,7 +28,7 @@ public class MainWindow extends Application {
     public void start(final Stage primaryStage) throws Exception {
         primaryStage.setTitle("MSI KEYBOARD");
 
-        Circle circle = new Circle(200, 200, 80, Color.DARKRED);
+        Circle circle = new Circle(200, 200, 80, Color.DEEPSKYBLUE);
 
         TextField colour1 = new TextField(preferences.get("colour1", "6"));
         TextField colour2 = new TextField(preferences.get("colour2", "6"));
@@ -77,7 +77,7 @@ public class MainWindow extends Application {
         vBox.getChildren().addAll(slider3);
 
         vBox.setAlignment(Pos.CENTER);
-        vBox.setFillWidth(true);
+//        vBox.setFillWidth(true);
 
         Scene scene = new Scene(root, 600, 400);
         primaryStage.setScene(scene);

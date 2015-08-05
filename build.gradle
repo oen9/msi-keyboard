@@ -19,6 +19,7 @@ dependencies {
     compile 'log4j:apache-log4j-extras:1.2.17'
     compile 'args4j:args4j:2.32'
     compile 'org.usb4java:usb4java:1.2.0'
+    compile 'org.springframework:spring-context:4.1.7.RELEASE'
 
     testCompile 'junit:junit:4.12'
 }
