@@ -13,7 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import org.apache.log4j.Logger;
-import pl.oen.msi.keyboard.exception.DeviceNotFoundException;
+import scala.Some;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -29,10 +29,11 @@ public class MainWindow extends Application {
         primaryStage.setTitle("MSI KEYBOARD");
 
         Circle circle = new Circle(200, 200, 80, Color.DARKRED);
+        KeyboardSchema keyboardSchema = KeyboardSchema.apply();
 
-        TextField colour1 = new TextField(preferences.get("colour1", "6"));
-        TextField colour2 = new TextField(preferences.get("colour2", "6"));
-        TextField colour3 = new TextField(preferences.get("colour3", "6"));
+        TextField colour1 = new TextField(String.valueOf(keyboardSchema.colour1()));
+        TextField colour2 = new TextField(String.valueOf(keyboardSchema.colour2()));
+        TextField colour3 = new TextField(String.valueOf(keyboardSchema.colour3()));
 
         Button btn = new Button();
         btn.setText("Change colours!");
@@ -40,9 +41,9 @@ public class MainWindow extends Application {
             KeyboardUsbConnector keyboardUsbConnector = new KeyboardUsbConnector();
             try {
                 keyboardUsbConnector.setColours(
-                        Byte.valueOf(colour1.getText()),
-                        Byte.valueOf(colour2.getText()),
-                        Byte.valueOf(colour3.getText()));
+                        new Some(Byte.valueOf(colour1.getText())),
+                        new Some(Byte.valueOf(colour2.getText())),
+                        new Some(Byte.valueOf(colour3.getText())));
 
                 preferences.put("colour1", colour1.getText());
                 preferences.put("colour2", colour2.getText());
@@ -82,7 +83,7 @@ public class MainWindow extends Application {
         Scene scene = new Scene(root, 600, 400);
         primaryStage.setScene(scene);
 
-        if (!getParameters().getUnnamed().contains(Args.HIDE_PARAM_NAME)) {
+        if (!getParameters().getUnnamed().contains(Args.HIDE_PARAM_NAME())) {
             primaryStage.show();
         }
 
@@ -92,7 +93,9 @@ public class MainWindow extends Application {
     }
 
     protected Slider createSlider(final TextField colour) {
-        Slider slider = new Slider(-15, 15, 6);
+        Double sliderStartValue = Double.parseDouble(colour.getText());
+
+        Slider slider = new Slider(-15, 15, sliderStartValue);
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
             colour.setText(String.valueOf(newValue.byteValue()));
         });
@@ -138,19 +141,15 @@ public class MainWindow extends Application {
         }
 
         @Override
-        public void mousePressed(final MouseEvent e) {
-        }
+        public void mousePressed(final MouseEvent e) {}
 
         @Override
-        public void mouseReleased(final MouseEvent e) {
-        }
+        public void mouseReleased(final MouseEvent e) {}
 
         @Override
-        public void mouseEntered(final MouseEvent e) {
-        }
+        public void mouseEntered(final MouseEvent e) {}
 
         @Override
-        public void mouseExited(final MouseEvent e) {
-        }
+        public void mouseExited(final MouseEvent e) {}
     }
 }
