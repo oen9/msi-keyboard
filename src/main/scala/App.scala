@@ -3,14 +3,21 @@ import javafx.application.Application
 
 import org.apache.log4j.Logger
 import org.kohsuke.args4j.{CmdLineException, CmdLineParser}
+import org.usb4java.LibUsb
 import pl.oen.msi.keyboard.{Args, DeviceNotFoundException, KeyboardUsbConnector, MainWindow}
+import pl.oen.usb.UsbDevice
 
 import scala.collection.JavaConversions._
 
 object App {
   val LOGGER: Logger = Logger.getLogger(classOf[App])
 
-  def main(args: Array[String]): Unit = {
+  def main(args: Array[String]) = {
+    val usbDevice = new UsbDevice(0x1770.toShort, -256.toShort)
+    usbDevice.close
+  }
+
+  def main2(args: Array[String]): Unit = {
 
     val args2: Args = new Args
     val parser: CmdLineParser = new CmdLineParser(args2)
