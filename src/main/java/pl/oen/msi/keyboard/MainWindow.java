@@ -41,9 +41,9 @@ public class MainWindow extends Application {
             KeyboardUsbConnector keyboardUsbConnector = new KeyboardUsbConnector();
             try {
                 keyboardUsbConnector.setColours(
-                        new Some(Byte.valueOf(colour1.getText())),
-                        new Some(Byte.valueOf(colour2.getText())),
-                        new Some(Byte.valueOf(colour3.getText())));
+                        new Some<>(Byte.valueOf(colour1.getText())),
+                        new Some<>(Byte.valueOf(colour2.getText())),
+                        new Some<>(Byte.valueOf(colour3.getText())));
 
                 preferences.put("colour1", colour1.getText());
                 preferences.put("colour2", colour2.getText());
