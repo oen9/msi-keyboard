@@ -3,4 +3,4 @@ MSI steelseries keyboard
 
 ![alt tag](https://raw.githubusercontent.com/oen9/msi-keyboard/master/src/main/resources/GS60.jpg)
 
-You must adjust `$JAVA_HOME/jre/.systemPrefs/pl/oen/msi` permissions
+You must adjust `$JAVA_HOME/jre/.systemPrefs/pl` or `/etc/.java/.systemPrefs/pl` permissions

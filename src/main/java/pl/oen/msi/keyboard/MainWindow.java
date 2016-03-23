@@ -38,7 +38,9 @@ public class MainWindow extends Application {
         Button btn = new Button();
         btn.setText("Change colours!");
         btn.setOnAction(event -> {
-            KeyboardUsbConnector keyboardUsbConnector = new KeyboardUsbConnector();
+//            KeyboardUsbConnector keyboardUsbConnector = new KeyboardUsbConnectorImpl();
+            KeyboardUsbConnector keyboardUsbConnector = new KeyboardUsbConnectorImpl2();
+
             try {
                 keyboardUsbConnector.setColours(
                         new Some<>(Byte.valueOf(colour1.getText())),

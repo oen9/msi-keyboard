@@ -16,11 +16,26 @@ class UsbDevice(val usbDeviceIds: UsbDeviceIds, val interfaceNumber: Short = 0) 
   val context: Context = initLibUsb
   val handle: DeviceHandle = createDevicehandle
 
-  def sendToDevice(buffer: ByteBuffer) {
-    val claimResult = LibUsb.claimInterface(handle, interfaceNumber)
-    if (claimResult != LibUsb.SUCCESS) throw new LibUsbException("Unable to claim interface", claimResult)
+  def sendToDevice(usbCommunication: => Unit) {
+    this.synchronized {
+      detachKernelDriver
 
-    try {
+      val claimResult = LibUsb.claimInterface(handle, interfaceNumber)
+      if (claimResult != LibUsb.SUCCESS) throw new LibUsbException("Unable to claim interface", claimResult)
+
+      try {
+        usbCommunication
+
+      } finally {
+        val releaseResult = LibUsb.releaseInterface(handle, interfaceNumber)
+        if (releaseResult != LibUsb.SUCCESS) LOGGER.error(new LibUsbException("Unable to release interface", releaseResult)) //throw new LibUsbException("Unable to release interface", releaseResult)
+
+        attachKernelDriver.foreach(LOGGER.error(_))
+      }
+    }
+  }
+
+  def transferData(buffer: ByteBuffer) = {
       val transfered: Int = LibUsb.controlTransfer(handle,
         (LibUsb.REQUEST_TYPE_CLASS | LibUsb.RECIPIENT_INTERFACE | LibUsb.ENDPOINT_OUT).toByte,
         0x09.toByte, ((3 << 8) | report_number).toShort,
@@ -33,11 +48,6 @@ class UsbDevice(val usbDeviceIds: UsbDeviceIds, val interfaceNumber: Short = 0) 
       var sent: String = ""
       for (i <- 0 until buffer.capacity()) sent += buffer.get(i) + " "
       LOGGER.info(transfered + " bytes sent: " + sent)
-
-    } finally {
-      val releaseResult = LibUsb.releaseInterface(handle, interfaceNumber)
-      if (releaseResult != LibUsb.SUCCESS) throw new LibUsbException("Unable to release interface", releaseResult)
-    }
   }
 
   def close() {
@@ -91,13 +101,14 @@ class UsbDevice(val usbDeviceIds: UsbDeviceIds, val interfaceNumber: Short = 0) 
     }
   }
 
-  protected def attachKernelDriver {
+  protected def attachKernelDriver : Option[LibUsbException] = {
     if (detach) {
       val result: Int = LibUsb.attachKernelDriver(handle, interfaceNumber)
-      if (result != LibUsb.SUCCESS) throw new LibUsbException("Unable to re-attach kernel driver", result)
+      if (result != LibUsb.SUCCESS) return Some(new LibUsbException("Unable to re-attach kernel driver", result))
     }
+    None
   }
-
-  class DeviceNotFoundException(usbDeviceIds: UsbDeviceIds)
-    extends RuntimeException("vendorId=" + usbDeviceIds.vendorId + ", productId=" + usbDeviceIds.productId)
 }
+
+class DeviceNotFoundException(usbDeviceIds: UsbDeviceIds)
+  extends RuntimeException("vendorId=" + usbDeviceIds.vendorId + ", productId=" + usbDeviceIds.productId)
